@@ -26,9 +26,10 @@ def cleaning(text:str) -> str:
         Método principal que aplica a limpeza completa dos dados
     """
     cleanedText = str(text).lower()
+    cleanedText = padronizaTexto(cleanedText)
     cleanedText = replaceBlanks(cleanedText)
     cleanedText = normalizeText(cleanedText)
-    cleanedText = removePunctuation(cleanedText)
+    cleanedText = removePunctuation(cleanedText)    
     return cleanedText
 
 
@@ -64,6 +65,7 @@ def padronizaTexto(text:str) -> str:
         Método responsável por padronizar os valores para algumas variáveis
     """
     text = text.replace('ignorado', 'ignorada')
+    text = text.replace(',', '.')
     return text
 
 
