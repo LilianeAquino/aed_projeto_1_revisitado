@@ -28,8 +28,7 @@ def cleaning(text:str) -> str:
     cleanedText = str(text).lower()
     cleanedText = padronizaTexto(cleanedText)
     cleanedText = replaceBlanks(cleanedText)
-    cleanedText = normalizeText(cleanedText)
-    cleanedText = removePunctuation(cleanedText)    
+    cleanedText = normalizeText(cleanedText)   
     return cleanedText
 
 
@@ -52,14 +51,6 @@ def normalizeText(text:str) -> str:
     return normalize('NFKD', text).encode('ASCII', 'ignore').decode('ASCII')
 
 
-def removePunctuation(text:str) -> str:
-    """
-        Realiza a remoção da pontuação dos textos
-    """
-    text = punctuationRegex.sub(' ', text)     
-    return text
-
-
 def padronizaTexto(text:str) -> str:
     """
         Método responsável por padronizar os valores para algumas variáveis
@@ -67,6 +58,55 @@ def padronizaTexto(text:str) -> str:
     text = text.replace('ignorado', 'ignorada')
     text = text.replace(',', '.')
     return text
+
+
+def padronizaDiaSemana(text:str) -> str:
+    """
+     Método responsável por padronizar os dias da semana
+    """
+    text = text.lower()
+    text = text.replace('segunda-feira', 'segunda')
+    text = text.replace('terça-feira', 'terça')
+    text = text.replace('quarta-feira', 'quarta')
+    text = text.replace('quinta-feira', 'quinta')
+    text = text.replace('sexta-feira', 'sexta')
+    return text
+
+
+def padronizaCausaAcidente(text:str) -> str:
+    """
+     Método responsável por padronizar  as causas dos acidentes
+    """
+    text = text.lower()
+    
+    if text == 'ingestao de alcool' or text=='ingestao de substancias psicoativas':
+        text = 'ingestao de alcool ou substancias psicoativas'
+    
+    text = text.replace('defeito mecanico em veiculo', 'defeito mecanico no veiculo')
+    text = text.replace('falta de atencao a conducao', 'falta de atencao')
+    text = text.replace('falta de atencao do pedestre', 'falta de atencao')
+    text = text.replace('mal subito do condutor', 'mal subito')
+    text = text.replace('restricao de visibilidade em curvas horizontais', 'restricao de visibilidade')
+    text = text.replace('restricao de visibilidade em curvas verticais', 'restricao de visibilidade')
+    text = text.replace('condutor dormindo', 'dormindo')
+    text = text.replace('ingestao de alcool pelo condutor', 'ingestao de alcool ou substancias psicoativas')
+    text = text.replace('ingestao de alcool ou substancias psicoativas pelo condutor', 'ingestao de alcool ou substancias psicoativas')
+    text = text.replace('ingestao de alcool e/ou substancias psicoativas pelo pedestre', 'ingestao de alcool ou substancias psicoativas')
+    text = text.replace('ingestao de alcool ou de substancias psicoativas pelo pedestre', 'ingestao de alcool ou substancias psicoativas')
+    text = text.replace('ingestao de substancias psicoativas pelo condutor', 'ingestao de alcool ou substancias psicoativas')
+    return ' '.join(palavra.strip() for palavra in text.split())
+
+
+def padronizaTipoAcidente(text:str) -> str:
+    """
+     Método responsável por padronizar os tipos de acidentes
+    """
+    text = text.lower()   
+    text = text.replace('colisao com objeto fixo', 'colisao com objeto')
+    text = text.replace('colisao com objeto movel', 'colisao com objeto')
+    text = text.replace('colisao lateral mesmo sentido', 'colisao lateral')
+    text = text.replace('colisao lateral sentido oposto', 'colisao lateral')
+    return ' '.join(palavra.strip() for palavra in text.split())
 
 
 def estacaoAno(data:date) -> str:
