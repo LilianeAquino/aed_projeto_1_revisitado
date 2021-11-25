@@ -3,23 +3,22 @@ from unicodedata import normalize
 from re import compile
 from datetime import date
 
-
 punctuationRegex = compile(r'[^0-9a-zA-Z_]')
 
 mapaEstacao = {'outono' : 1,'inverno': 2, 'verão': 3, 'primavera': 4}
 
 mapaClima = {
-    'sol' :   1,
-    'chuva' : 2,
-    'nublado' : 3,
-    'céu claro' : 4,
-    'vento' : 5,
-    'neve' : 6,
-    'nevoeiro/neblina' : 7, 
-    'granizo' : 8, 
+    'sol': 0, 
+    'chuva': 1, 
+    'ignorada': 2, 
+    'ceu claro': 3, 
+    'nublado': 4, 
+    'vento': 5,
+    'neve': 6, 
+    'nevoeiro/neblina': 7, 
+    'granizo': 8, 
     'garoa/chuvisco': 9
 }
-
 
 def cleaning(text:str) -> str:
     """
@@ -107,6 +106,13 @@ def padronizaTipoAcidente(text:str) -> str:
     text = text.replace('colisao lateral mesmo sentido', 'colisao lateral')
     text = text.replace('colisao lateral sentido oposto', 'colisao lateral')
     return ' '.join(palavra.strip() for palavra in text.split())
+
+
+def padronizaNomeBrs(text:str) -> str:
+    """
+     Método responsável por padronizar os nomes das BRs
+    """
+    return text.replace('.0', '')
 
 
 def estacaoAno(data:date) -> str:
