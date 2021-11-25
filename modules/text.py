@@ -117,27 +117,13 @@ def estacaoAno(data:date) -> str:
     dia = data.day
     mes = data.month
        
-    if mes < 3 or mes == 3 and dia <= 19 or mes == 12 and dia >= 22:
-        estacao = 'verão'
-    if mes == 3 and dia >= 20 or mes < 6 and mes > 3 or mes == 6 and dia <= 20:
-        estacao = 'outono'      
-    if mes == 6 and dia >= 21 or mes < 9 and mes > 6 or mes == 9 and dia <= 22:
-        estacao = 'inverno'
-    else:
-        estacao = 'primavera'
-    return estacao
-
-
-def diaSemana(data: date) -> str:
-    """
-         Método responsável por mapear os dias da semana
-    """
-    dias = ['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado', 'domingo']
-    
-    data = date(year=data.year, month=data.month, day=data.day)
-    indice_da_semana = data.weekday()
-    diaSemana = dias[indice_da_semana]
-    return diaSemana
+    if (mes == 12 and dia >= 21) or (mes < 3) or (mes == 3 and dia <= 20):
+        return 'verão'
+    if (mes == 3 and dia >= 21) or (mes > 3 and mes < 6) or (mes == 6 and dia <= 20):
+        return 'outono'      
+    if (mes == 6 and dia >= 21) or (mes > 6 and mes < 9) or (mes == 9 and dia <= 22):
+        return 'inverno'
+    return 'primavera'
 
 
 def regiaoPais(uf:str) -> str:
