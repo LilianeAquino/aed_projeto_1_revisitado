@@ -152,3 +152,13 @@ def regiaoPais(uf:str) -> str:
     else:
         regiao = 'sul'    
     return regiao
+
+def parseVitimas(mortos:int, feridos:int, ilesos:int) -> str:
+    """
+        Método responsável por definir a severidade do acidente
+    """
+    if mortos != 0:
+        return 'fatalidade'
+    elif feridos != 0:
+        return 'feridos'
+    return 'ilesos'
