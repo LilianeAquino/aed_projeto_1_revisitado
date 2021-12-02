@@ -28,7 +28,7 @@ def cleaning(text:str) -> str:
     cleanedText = padronizaTexto(cleanedText)
     cleanedText = replaceBlanks(cleanedText)
     cleanedText = normalizeText(cleanedText)   
-    return cleanedText
+    return ' '.join(palavra.strip() for palavra in cleanedText.split())
 
 
 
@@ -54,8 +54,17 @@ def padronizaTexto(text:str) -> str:
     """
         Método responsável por padronizar os valores para algumas variáveis
     """
-    text = text.replace('ignorado', 'ignorada')
-    text = text.replace(',', '.')
+    return text.replace('ignorado', 'ignorada')
+
+
+def padronizaTipoVeiculo(text:str) -> str:
+    """
+     Método responsável por padronizar os tipos de veículos
+    """
+    text = text.lower()
+    text = text.replace('micro-onibus', 'microonibus')
+    text = text.replace('motocicletas', 'motocicleta')
+    text = text.replace('semi-reboque', 'semireboque')
     return text
 
 
@@ -64,11 +73,14 @@ def padronizaDiaSemana(text:str) -> str:
      Método responsável por padronizar os dias da semana
     """
     text = text.lower()
+    text = text.strip()
     text = text.replace('segunda-feira', 'segunda')
-    text = text.replace('terça-feira', 'terça')
+    text = text.replace('terça-feira', 'terca')
+    text = text.replace('terça', 'terca')
     text = text.replace('quarta-feira', 'quarta')
     text = text.replace('quinta-feira', 'quinta')
     text = text.replace('sexta-feira', 'sexta')
+    text = text.replace('sábado', 'sabado')
     return text
 
 
@@ -103,6 +115,8 @@ def padronizaTipoAcidente(text:str) -> str:
     text = text.lower()   
     text = text.replace('colisao com objeto fixo', 'colisao com objeto')
     text = text.replace('colisao com objeto movel', 'colisao com objeto')
+    text = text.replace('colisao com objeto em movimento', 'colisao com objeto')
+    text = text.replace('colisao com objeto estatico', 'colisao com objeto')
     text = text.replace('colisao lateral mesmo sentido', 'colisao lateral')
     text = text.replace('colisao lateral sentido oposto', 'colisao lateral')
     return ' '.join(palavra.strip() for palavra in text.split())
@@ -113,6 +127,27 @@ def padronizaNomeBrs(text:str) -> str:
      Método responsável por padronizar os nomes das BRs
     """
     return text.replace('.0', '')
+
+
+def padronizaEstadoFisico(text:str) -> str:
+    """
+     Método responsável por padronizar o estado fisico
+    """
+    text = text.replace('lesoes graves', 'ferido grave')
+    text = text.replace('lesoes leves', 'ferido leve')
+    text = text.replace('obito', 'morto')
+    return text
+
+
+def padronizaUsoSolo(text:str) -> str:
+    """
+     Método responsável por padronizar as características do local do acidente
+    """
+    text = text.lower()
+    text = text.strip()
+    text = text.replace('não', 'rural')
+    text = text.replace('sim', 'urbano')
+    return text
 
 
 def estacaoAno(data:date) -> str:
@@ -152,13 +187,3 @@ def regiaoPais(uf:str) -> str:
     else:
         regiao = 'sul'    
     return regiao
-
-def parseVitimas(mortos:int, feridos:int, ilesos:int) -> str:
-    """
-        Método responsável por definir a severidade do acidente
-    """
-    if mortos != 0:
-        return 'fatalidade'
-    elif feridos != 0:
-        return 'feridos'
-    return 'ilesos'
