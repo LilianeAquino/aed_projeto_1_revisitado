@@ -5,20 +5,26 @@ from datetime import date
 
 punctuationRegex = compile(r'[^0-9a-zA-Z_]')
 
-mapaEstacao = {'outono' : 1,'inverno': 2, 'verão': 3, 'primavera': 4}
-
-mapaClima = {
-    'sol': 0, 
-    'chuva': 1, 
-    'ignorada': 2, 
-    'ceu claro': 3, 
-    'nublado': 4, 
-    'vento': 5,
-    'neve': 6, 
-    'nevoeiro/neblina': 7, 
-    'granizo': 8, 
-    'garoa/chuvisco': 9
+mapFase = {
+    'amanhecer': 'dia', 
+    'pleno dia': 'dia', 
+    'anoitecer': 'noite', 
+    'plena noite': 'noite'
 }
+
+
+mapClima = {
+    'ceu claro': 'ensolarado',
+    'sol': 'ensolarado',
+    'nublado': 'nublado',
+    'nevoeiro/neblina': 'nublado',
+    'chuva': 'tempo ruim',
+    'garoa/chuvisco': 'tempo ruim',
+    'granizo': 'tempo ruim',
+    'neve': 'tempo ruim',
+    'vento': 'tempo ruim'
+}
+
 
 def cleaning(text:str) -> str:
     """
@@ -150,7 +156,7 @@ def padronizaUsoSolo(text:str) -> str:
     return text
 
 
-def estacaoAno(data:date) -> str:
+def mapEstacaoAno(data:date) -> str:
     """
          Método responsável por mapear as estações do ano
     """
@@ -167,7 +173,7 @@ def estacaoAno(data:date) -> str:
     return 'primavera'
 
 
-def regiaoPais(uf:str) -> str:
+def mapRegiaoPais(uf:str) -> str:
     """
      Método resposável por mapear as regiões do Brasil
     """
@@ -187,3 +193,40 @@ def regiaoPais(uf:str) -> str:
     else:
         regiao = 'sul'    
     return regiao
+
+
+def mapTiposDeAcidentes(text:str) -> str:
+    """
+        Método responsável por mapear os tipos de acidentes
+    """    
+    if text in ['atropelamento de animal', 'atropelamento de pedestre', 'atropelamento de pessoa']:
+        return 'atropelamento'
+    elif text in ['capotamento', 'tombamento']:
+        return 'capotamento/tombamento'
+    elif text in ['colisao com bicicleta', 'colisao com objeto', 'colisao frontal', 'colisao lateral', 'colisao transversal', 'colisao traseira']:
+        return 'colisão'
+    elif text in ['queda de motocicleta / bicicleta / veiculo', 'queda de ocupante de veiculo']:
+        return 'queda'
+    elif text in ['saida de leito carrocavel', 'saida de pista']:
+        return 'saída pista/leito'
+    return 'outros'
+
+
+def mapDiasDaSemana(text:str) -> str:
+    """
+        Método responsável por mapear os dias da semana em úteis ou final de semana
+    """
+    return 'final de semana' if text in ['sábado', 'domingo'] else 'dia útil'
+
+
+def mapTamanhoVeiculos(text:str) -> str:
+    """
+        Método responsável por mapear o porte dos veículos
+    """
+    if text in ['automovel', 'caminhonete', 'camioneta', 'utilitario']:
+        return 'pequeno porte'
+    elif text in ['motocicleta', 'motoneta', 'bicicleta', 'ciclomotor', 'triciclo', 'side-car']:
+        return 'motociclista/ciclista'
+    elif text in ['outros', 'carro-de-mao', 'carro de mao', 'carroca', 'carroca-charrete', 'charrete', 'quadriciclo']:
+        return 'outros'
+    return 'grande porte'
