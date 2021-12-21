@@ -5,6 +5,7 @@ from datetime import date
 
 punctuationRegex = compile(r'[^0-9a-zA-Z_]')
 
+
 mapFase = {
     'amanhecer': 'dia', 
     'pleno dia': 'dia', 
@@ -37,6 +38,12 @@ def cleaning(text:str) -> str:
     return ' '.join(palavra.strip() for palavra in cleanedText.split())
 
 
+def padronizaTexto(text:str) -> str:
+    """
+        Método responsável por padronizar os valores para algumas variáveis
+    """
+    return text.replace('ignorada', 'ignorado')
+
 
 def replaceBlanks(text:str) -> str:
     """
@@ -54,24 +61,6 @@ def normalizeText(text:str) -> str:
         Realiza a normalização dos textos
     """
     return normalize('NFKD', text).encode('ASCII', 'ignore').decode('ASCII')
-
-
-def padronizaTexto(text:str) -> str:
-    """
-        Método responsável por padronizar os valores para algumas variáveis
-    """
-    return text.replace('ignorado', 'ignorada')
-
-
-def padronizaTipoVeiculo(text:str) -> str:
-    """
-     Método responsável por padronizar os tipos de veículos
-    """
-    text = text.lower()
-    text = text.replace('micro-onibus', 'microonibus')
-    text = text.replace('motocicletas', 'motocicleta')
-    text = text.replace('semi-reboque', 'semireboque')
-    return text
 
 
 def padronizaDiaSemana(text:str) -> str:
@@ -125,6 +114,7 @@ def padronizaTipoAcidente(text:str) -> str:
     text = text.replace('colisao com objeto estatico', 'colisao com objeto')
     text = text.replace('colisao lateral mesmo sentido', 'colisao lateral')
     text = text.replace('colisao lateral sentido oposto', 'colisao lateral')
+    text = text.replace('atropelamento de pessoa', 'atropelamento de pedestre')
     return ' '.join(palavra.strip() for palavra in text.split())
 
 
@@ -133,6 +123,17 @@ def padronizaNomeBrs(text:str) -> str:
      Método responsável por padronizar os nomes das BRs
     """
     return text.replace('.0', '')
+
+
+def padronizaUsoSolo(text:str) -> str:
+    """
+     Método responsável por padronizar as características do local do acidente
+    """
+    text = text.lower()
+    text = text.strip()
+    text = text.replace('não', 'rural')
+    text = text.replace('sim', 'urbano')
+    return text
 
 
 def padronizaEstadoFisico(text:str) -> str:
@@ -145,15 +146,56 @@ def padronizaEstadoFisico(text:str) -> str:
     return text
 
 
-def padronizaUsoSolo(text:str) -> str:
+def padronizaTipoVeiculo(text:str) -> str:
     """
-     Método responsável por padronizar as características do local do acidente
+     Método responsável por padronizar os tipos de veículos
     """
     text = text.lower()
     text = text.strip()
-    text = text.replace('não', 'rural')
-    text = text.replace('sim', 'urbano')
+    text = text.replace('micro-onibus', 'microonibus')
+    text = text.replace('motocicletas', 'motocicleta')
+    text = text.replace('semi-reboque', 'semireboque')
+    text = text.replace('carro-de-mao', 'carro de mao')
     return text
+
+
+def padronizaSexo(text:str) -> str:
+    """
+     Método responsável por padronizar o sexo biológico
+    """
+    text = text.lower()
+    text = text.strip()
+    
+    if text == 'f':
+        text = 'feminino'
+    elif text == 'm':
+        text = 'masculino'
+    elif text == 'i':
+        text = 'ignorado'    
+    
+    text = text.replace('invalido', 'ignorado')
+    text = text.replace('nao informado', 'ignorado')
+    return text
+
+
+def padronizaMunicipios(text:str) -> str:
+    """
+     Método responsável por padronizar os nomes dos municípios
+    """
+    return ' '.join(palavra.strip().capitalize() for palavra in text.split())
+
+
+preprocessingFunctionsMap = {
+    'dia_semana' : padronizaDiaSemana,
+    'causa_acidente': padronizaCausaAcidente,
+    'tipo_acidente': padronizaTipoAcidente,
+    'br': padronizaNomeBrs,
+    'uso_solo': padronizaUsoSolo,
+    'estado_fisico': padronizaEstadoFisico,
+    'tipo_veiculo' : padronizaTipoVeiculo,
+    'sexo': padronizaSexo,
+    'municipio': padronizaMunicipios
+}
 
 
 def mapEstacaoAno(data:date) -> str:
