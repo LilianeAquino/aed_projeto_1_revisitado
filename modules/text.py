@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from unicodedata import normalize
 from re import compile
 from datetime import date
+from datetime import datetime
 
 punctuationRegex = compile(r'[^0-9a-zA-Z_]')
 
@@ -272,3 +273,101 @@ def mapTamanhoVeiculos(text:str) -> str:
     elif text in ['outros', 'carro-de-mao', 'carro de mao', 'carroca', 'carroca-charrete', 'charrete', 'quadriciclo']:
         return 'outros'
     return 'grande porte'
+
+
+
+feriados_fixos = {
+    '01/01': 'ano novo',
+    '21/04': 'tiradentes',
+    '01/05': 'trabalhador',
+    '07/09': 'independencia',
+    '12/10': 'padroeira do brasil',
+    '02/11': 'finados',
+    '15/11': 'proclamação da república',
+    '25/12': 'natal'
+}
+    
+feriados_moveis = {   
+ '20/02/2007': 'carnaval',
+ '01/04/2007': 'sexta santa',
+ '07/06/2007': 'corpus christi',
+ '05/02/2008': 'carnaval',
+ '21/03/2008': 'sexta santa',
+ '22/05/2008': 'corpus christi',
+ '24/02/2009': 'carnaval',
+ '10/04/2009': 'sexta santa',
+ '11/06/2009': 'corpus christi',
+ '16/02/2010': 'carnaval',
+ '02/04/2010': 'sexta santa',
+ '03/06/2010': 'corpus christi',
+ '08/03/2011': 'carnaval',
+ '22/04/2011': 'sexta santa',
+ '23/06/2011': 'corpus christi',
+ '21/02/2012': 'carnaval',
+ '06/04/2012': 'sexta santa',
+ '07/06/2012': 'corpus christi',
+ '12/02/2013': 'carnaval',
+ '29/03/2013': 'sexta santa',
+ '30/05/2013': 'corpus christi',
+ '04/03/2014': 'carnaval',
+ '18/04/2014': 'sexta santa',
+ '19/06/2014': 'corpus christi',
+ '17/02/2015': 'carnaval',
+ '03/04/2015': 'sexta santa',
+ '04/06/2015': 'corpus christi',
+ '09/02/2016': 'carnaval',
+ '25/03/2016': 'sexta santa',
+ '26/05/2016': 'corpus christi',
+ '28/02/2017': 'carnaval',
+ '14/04/2017': 'sexta santa',
+ '15/06/2017': 'corpus christi',
+ '13/02/2018': 'carnaval',
+ '30/03/2018': 'sexta santa',
+ '31/05/2018': 'corpus christi',
+ '05/03/2019': 'carnaval',
+ '19/04/2019': 'sexta santa',
+ '20/06/2019': 'corpus christi',
+ '25/02/2020': 'carnaval',
+ '10/04/2020': 'sexta santa',
+ '11/06/2020': 'corpus christi',
+ '16/02/2021': 'carnaval',
+ '02/04/2021': 'sexta santa',
+ '03/06/2021': 'corpus christi'
+}
+
+
+def getFeriadoNacional(data:str) -> str:
+    """
+        Método responsável por mapear os feriados nacionais
+    """
+    feriado = getFeriadoNacionalFixo(data)
+    if feriado:
+        return feriado
+    return getFeriadoNacionalMovel(data)
+    
+    
+def getFeriadoNacionalFixo(data:str) -> str:
+    """
+        Método responsável por mapear os feriados nacionais com datas fixas
+    """
+    data = data.strftime("%d/%m/%Y")[:5]
+    if data in feriados_fixos.keys():
+        return feriados_fixos[data]
+    
+
+def getFeriadoNacionalMovel(data:str) -> str:
+    """
+        Método responsável por mapear os feriados nacionais com datas movéis
+    """
+    data = data.strftime("%d/%m/%Y")
+    if data in feriados_moveis.keys():
+        return feriados_moveis[data]
+    
+
+def mapFeriadoEnaoFeriado(text: str) -> str:
+    """
+        Método responsável por agrupar dias de feriados e não feriados
+    """
+    if text != 'sem feriado':
+        return 'feriado'
+    return text
