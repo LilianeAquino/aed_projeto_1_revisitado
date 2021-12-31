@@ -16,8 +16,8 @@ mapFase = {
 
 
 mapClima = {
-    'ceu claro': 'ensolarado',
-    'sol': 'ensolarado',
+    'ceu claro': 'tempo bom',
+    'sol': 'tempo bom',
     'nublado': 'nublado',
     'nevoeiro/neblina': 'nublado',
     'chuva': 'tempo ruim',
@@ -259,7 +259,7 @@ def mapDiasDaSemana(text:str) -> str:
     """
         Método responsável por mapear os dias da semana em úteis ou final de semana
     """
-    return 'final de semana' if text in ['sábado', 'domingo'] else 'dia útil'
+    return 'final de semana' if text in ['sabado', 'domingo'] else 'dia útil'
 
 
 def mapTamanhoVeiculos(text:str) -> str:
