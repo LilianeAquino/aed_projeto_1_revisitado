@@ -28,6 +28,13 @@ mapClima = {
 }
 
 
+mapEstadoFisico = {
+    'ileso': 'sem mortos', 
+    'ferido leve': 'sem mortos', 
+    'ferido grave': 'sem mortos', 
+    'morto': 'com mortos'
+}
+
 def cleaning(text:str) -> str:
     """
         Método principal que aplica a limpeza completa dos dados
