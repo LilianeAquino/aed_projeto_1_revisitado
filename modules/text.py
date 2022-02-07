@@ -7,6 +7,17 @@ from datetime import datetime
 punctuationRegex = compile(r'[^0-9a-zA-Z_]')
 
 
+map_periodo_semana = {
+    'segunda': 'segunda a quinta-feira',
+    'terca': 'segunda a quinta-feira',
+    'quarta': 'segunda a quinta-feira',
+    'quinta': 'segunda a quinta-feira',
+    'sexta': 'sexta-feira a domingo',
+    'sabado': 'sexta-feira a domingo',
+    'domingo': 'sexta-feira a domingo',
+}
+
+
 mapFase = {
     'amanhecer': 'dia', 
     'pleno dia': 'dia', 
@@ -34,6 +45,97 @@ mapEstadoFisico = {
     'ferido grave': 'sem mortos', 
     'morto': 'com mortos'
 }
+
+
+comportamental = [
+ 'desobediencia a sinalizacao',
+ 'desobediencia as normas de transito pelo condutor',
+ 'desobediencia as normas de transito pelo pedestre',
+ 'dormindo',
+ 'falta de atencao',
+ 'ingestao de alcool ou substancias psicoativas',
+ 'nao guardar distancia de seguranca',
+ 'ultrapassagem indevida',
+ 'velocidade incompativel'
+ 'trafegar com motocicleta (ou similar) entre as faixas',
+ 'transitar na calcada',
+ 'transitar na contramao',
+ 'transitar no acostamento',
+ 'acessar a via sem observar a presenca dos outros veiculos',
+ 'ausencia de reacao do condutor',
+ 'condutor deixou de manter distancia do veiculo da frente',
+ 'condutor desrespeitou a iluminacao vermelha do semaforo',
+ 'condutor usando celular',
+ 'conversao proibida',
+ 'deixar de acionar o farol da motocicleta (ou similar)',
+ 'desrespeitar a preferencia no cruzamento',
+ 'entrada inopinada do pedestre',
+ 'estacionar ou parar em local proibido',
+ 'frear bruscamente',
+ 'farois desregulados',
+ 'mal subito',
+ 'manobra de mudanca de faixa',
+ 'modificacao proibida',
+ 'pedestre andava na pista',
+ 'pedestre cruzava a pista fora da faixa',
+ 'reacao tardia ou ineficiente do condutor',
+ 'redutor de velocidade em desacordo',
+ 'retorno proibido',
+ 'participar de racha',
+]
+
+
+ambiental = [
+ 'acesso irregular',
+ 'acostamento em desnivel',
+ 'acumulo de agua sobre o pavimento',
+ 'acumulo de areia ou detritos sobre o pavimento',
+ 'acumulo de oleo sobre o pavimento',
+ 'afundamento ou ondulacao no pavimento',
+ 'agressao externa',
+ 'animais na pista',
+ 'area urbana sem a presenca de local apropriado para a travessia de pedestres',
+ 'ausencia de sinalizacao',
+ 'chuva',
+ 'curva acentuada',
+ 'declive acentuado',
+ 'demais falhas na via',
+ 'demais fenomenos da natureza', 
+ 'desvio temporario',
+ 'faixas de transito com largura insuficiente',
+ 'falta de acostamento',
+ 'falta de elemento de contencao que evite a saida do leito carrocavel',
+ 'fenomenos da natureza',
+ 'fumaca',
+ 'iluminacao deficiente',
+ 'neblina',
+ 'objeto estatico sobre o leito carrocavel',
+ 'obras na pista',
+ 'obstrucao na via',
+ 'pista em desnivel',
+ 'pista esburacada',
+ 'pista escorregadia',
+ 'restricao de visibilidade',
+ 'semaforo com defeito',
+ 'sinalizacao da via insuficiente ou inadequada',
+ 'sinalizacao encoberta',
+ 'sinalizacao mal posicionada',
+ 'sistema de drenagem ineficiente'    
+]
+
+
+veicular = [
+ 'avarias e/ou desgaste excessivo no pneu',
+ 'carga excessiva e/ou mal acondicionada',
+ 'defeito mecanico no veiculo',
+ 'defeito na via',
+ 'deficiencia do sistema de iluminacao/sinalizacao',
+ 'deficiencia ou nao acionamento do sistema de iluminacao/sinalizacao do veiculo',
+ 'demais falhas mecanicas ou eletricas',
+ 'problema com o freio',
+ 'problema na suspensao',
+]
+
 
 def cleaning(text:str) -> str:
     """
@@ -256,10 +358,23 @@ def mapTiposDeAcidentes(text:str) -> str:
     elif text in ['colisao com bicicleta', 'colisao com objeto', 'colisao frontal', 'colisao lateral', 'colisao transversal', 'colisao traseira']:
         return 'colisão'
     elif text in ['queda de motocicleta / bicicleta / veiculo', 'queda de ocupante de veiculo']:
-        return 'queda'
+        return 'queda de veículo'
     elif text in ['saida de leito carrocavel', 'saida de pista']:
-        return 'saída pista/leito'
+        return 'saída da pista'
     return 'outros'
+
+
+def mapCausaAcidentes(text:str) -> str:
+    """
+        Método responsável por mapear as causas dos acidentes com base nas características
+    """    
+    if text in comportamental:
+        return 'aspectos relacionados ao comportamento do condutor'
+    elif text in ambiental:
+        return 'aspectos relacionados a via ou ambiente'
+    elif text in veicular:
+        return 'aspectos relacionados ao veículo'
+    return 'outros aspectos não identificados'
 
 
 def mapDiasDaSemana(text:str) -> str:
@@ -281,6 +396,22 @@ def mapTamanhoVeiculos(text:str) -> str:
         return 'outros'
     return 'grande porte'
 
+
+def mapCondicaoEnvolvimento(envolvido:str, porte_veiculo: str) -> str:
+    """
+        Método responsável por mapear a forma como se deu a participação da vítima no acidente
+    """
+    is_condutor_or_passageiro = ['condutor', 'passageiro']
+    
+    if envolvido in is_condutor_or_passageiro and porte_veiculo == 'pequeno porte':
+        return 'ocupantes de automóveis'
+    elif envolvido in is_condutor_or_passageiro and porte_veiculo == 'motociclista/ciclista':
+        return 'ocupantes de motocicleta/bicileta'
+    elif envolvido in is_condutor_or_passageiro and porte_veiculo == 'grande porte':
+        return 'ocupantes de caminhão/ônibus'
+    elif envolvido in ['pedestre', 'cavaleiro']:
+        return 'pedestre'
+    return 'outros veículos'
 
 
 feriados_fixos = {
