@@ -20,4 +20,4 @@ ipython_config.py
 /dataset
 dataset/
 /img
-img/
+img/*

@@ -28,14 +28,6 @@ mapClima = {
 }
 
 
-mapEstadoFisico = {
-    'ileso': 'sem mortos', 
-    'ferido leve': 'sem mortos', 
-    'ferido grave': 'sem mortos', 
-    'morto': 'com mortos'
-}
-
-
 comportamental = [
  'desobediencia a sinalizacao',
  'desobediencia as normas de transito pelo condutor',
