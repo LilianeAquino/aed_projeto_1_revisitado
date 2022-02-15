@@ -7,17 +7,6 @@ from datetime import datetime
 punctuationRegex = compile(r'[^0-9a-zA-Z_]')
 
 
-map_periodo_semana = {
-    'segunda': 'segunda a quinta-feira',
-    'terca': 'segunda a quinta-feira',
-    'quarta': 'segunda a quinta-feira',
-    'quinta': 'segunda a quinta-feira',
-    'sexta': 'sexta-feira a domingo',
-    'sabado': 'sexta-feira a domingo',
-    'domingo': 'sexta-feira a domingo',
-}
-
-
 mapFase = {
     'amanhecer': 'dia', 
     'pleno dia': 'dia', 
@@ -347,21 +336,21 @@ def mapRegiaoPais(uf:str) -> str:
     return regiao
 
 
-def mapTiposDeAcidentes(text:str) -> str:
+def mapTiposDeAcidentes(tipo_acidente:str) -> str:
     """
         Método responsável por mapear os tipos de acidentes
     """    
-    if text in ['atropelamento de animal', 'atropelamento de pedestre', 'atropelamento de pessoa']:
-        return 'atropelamento'
-    elif text in ['capotamento', 'tombamento']:
+    if tipo_acidente in ['atropelamento de pedestre', 'atropelamento de pessoa']:
+        return 'atropelamento de pessoas'
+    elif tipo_acidente in ['capotamento', 'tombamento']:
         return 'capotamento/tombamento'
-    elif text in ['colisao com bicicleta', 'colisao com objeto', 'colisao frontal', 'colisao lateral', 'colisao transversal', 'colisao traseira']:
-        return 'colisão'
-    elif text in ['queda de motocicleta / bicicleta / veiculo', 'queda de ocupante de veiculo']:
+    elif tipo_acidente in ['queda de motocicleta / bicicleta / veiculo', 'queda de ocupante de veiculo']:
         return 'queda de veículo'
-    elif text in ['saida de leito carrocavel', 'saida de pista']:
+    elif tipo_acidente in ['saida de leito carrocavel', 'saida de pista']:
         return 'saída da pista'
-    return 'outros'
+    elif tipo_acidente in ['colisao com objeto', 'engavetamento', 'danos eventuais', 'incendio', 'derramamento de carga', 'eventos atipicos']:
+        return 'outros'
+    return tipo_acidente
 
 
 def mapCausaAcidentes(text:str) -> str:
@@ -384,6 +373,13 @@ def mapDiasDaSemana(text:str) -> str:
     return 'final de semana' if text in ['sabado', 'domingo'] else 'dia útil'
 
 
+def mapTipoEnvolvido(veiculo:str, envolvido: str) -> str:
+    """
+        Método responsável por agrupar tipos de envolvidos por tipo de veículo
+    """
+    return 'ciclista' if veiculo in ['bicicleta', 'triciclo'] else envolvido
+
+
 def mapTamanhoVeiculos(text:str) -> str:
     """
         Método responsável por mapear o porte dos veículos
@@ -397,21 +393,50 @@ def mapTamanhoVeiculos(text:str) -> str:
     return 'grande porte'
 
 
-def mapCondicaoEnvolvimento(envolvido:str, porte_veiculo: str) -> str:
+def mapCondicaoEnvolvimento(envolvido:str, tipo_veiculo: str) -> str:
     """
         Método responsável por mapear a forma como se deu a participação da vítima no acidente
     """
     is_condutor_or_passageiro = ['condutor', 'passageiro']
     
-    if envolvido in is_condutor_or_passageiro and porte_veiculo == 'pequeno porte':
-        return 'ocupantes de automóveis'
-    elif envolvido in is_condutor_or_passageiro and porte_veiculo == 'motociclista/ciclista':
-        return 'ocupantes de motocicleta/bicileta'
-    elif envolvido in is_condutor_or_passageiro and porte_veiculo == 'grande porte':
-        return 'ocupantes de caminhão/ônibus'
-    elif envolvido in ['pedestre', 'cavaleiro']:
+    if envolvido in is_condutor_or_passageiro and tipo_veiculo in ['automovel', 'utilitario']:
+        return 'ocupante de automóveis'  
+    if envolvido in is_condutor_or_passageiro and tipo_veiculo in ['caminhonete', 'camioneta']:
+        return 'ocupante de caminhonete/camioneta'    
+    elif envolvido in is_condutor_or_passageiro and tipo_veiculo in ['motocicleta', 'ciclomotor', 'triciclo', 'side-car']:
+        return 'ocupante de motocicleta'
+    elif envolvido in is_condutor_or_passageiro and tipo_veiculo == 'motoneta':
+        return 'ocupante de motoneta'
+    elif envolvido in is_condutor_or_passageiro and tipo_veiculo in ['caminhao-trator', 'caminhao', 'semireboque', 'caminhao-tanque', 'reboque']:
+        return 'ocupante de caminhão'
+    elif envolvido in is_condutor_or_passageiro and tipo_veiculo in ['microonibus', 'onibus']:
+        return 'ocupante de micro-ônibus/ônibus'    
+    elif envolvido == 'pedestre':
         return 'pedestre'
-    return 'outros veículos'
+    elif envolvido == 'ciclista':
+        return 'ciclista'
+    return 'outros'
+
+
+def mapTracadoVia(tracado: str) -> str:
+    """
+        Método responsável por agrupar os traçados da via com poucos dados
+    """
+    return tracado if tracado in ['reta', 'curva', 'cruzamento'] else 'outros'
+
+
+def mapHorarioAcidentes(hora:str) -> str:
+    """
+        Método responsável por mapear o horário das ocorrências
+    """    
+    if hora > '06:00:00' and hora <= '12:00:00':
+        return 'manhã'
+    elif hora > '12:00:00' and hora <= '18:00:00':
+        return 'tarde'
+    elif hora >= '00:00:00' and hora <= '06:00:00':
+        return 'madrugada'
+    elif hora > '18:00:00' and  hora <= '23:59:59':
+        return 'noite'
 
 
 feriados_fixos = {
@@ -509,3 +534,12 @@ def mapFeriadoEnaoFeriado(text: str) -> str:
     if text != 'sem feriado':
         return 'feriado'
     return text
+
+
+def identifierConductorsOver100OrUnder10YearsOld(tipo_envolvido:str, idade: str) -> str:
+    """
+        Método responsável por identificar possíveis outliers
+    """
+    if tipo_envolvido == 'condutor' and idade > 100 or idade < 10:
+        return 'outlier'
+    return 'não é outlier'
